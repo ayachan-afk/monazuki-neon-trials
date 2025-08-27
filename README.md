@@ -22,30 +22,26 @@ Go to our site first - https://monazuki.littlebunnyrocket.com/play.html
 ## ⚙️ Build & Run Locally
 
 Clone the repository and install dependencies:
-
-bash
+```
 git clone https://github.com/ayachan-afk/monazuki-neon-trials.git
 cd monazuki-neon-trials
 npm install
-
+```
 
 Run in dev mode:
-
-bash
+```
 npm run dev
-
+```
 
 Build for production:
-
-bash
+```
 npm run build
-
+```
 
 Serve build:
-
-bash
+```
 npm run preview
-
+```
 
 Dependencies are minimal:
 - [Privy](https://docs.privy.io/) (latest)  
