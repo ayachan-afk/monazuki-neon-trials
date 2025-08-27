@@ -72,7 +72,6 @@ function pickMGID(linkedAccounts: any[], providerId: string): string | undefined
   return acct?.embeddedWallets?.[0]?.address || acct?.wallets?.[0]?.address || acct?.address;
 }
 
-// Fungsi untuk mendapatkan deskripsi berdasarkan scene ID
 function getSceneDescription(sceneId: number): string {
   const sceneDescriptions: {[key: number]: string} = {
     41: "Neon Dock — slip past scanners",
@@ -100,7 +99,6 @@ function getSceneDescription(sceneId: number): string {
   return sceneDescriptions[sceneId] || `Unknown path #${sceneId}`;
 }
 
-// Fungsi untuk mendapatkan nama berdasarkan scene ID
 function getSceneName(sceneId: number): string {
   const sceneNames: {[key: number]: string} = {
     41: "Neon Dock",
@@ -162,7 +160,7 @@ function UI() {
   const [, setOwnerAtFetch] = useState<string>("");
   const [loadingNFTs, setLoadingNFTs] = useState<boolean>(false);
 
-  // Badge & leaderboard - Menggunakan isWinner mapping dari game contract
+  // Badge & leaderboard
   const [badgeOwned, setBadgeOwned] = useState<boolean>(false);
   const [winnersTotal, setWinnersTotal] = useState<number>(0);
 
@@ -216,24 +214,21 @@ function UI() {
     }
   }
 
-  // Mobile-friendly link flow: login dulu -> jeda -> link MGID
+  // Mobile-friendly
   async function linkMGIDPrivyFlow() {
     if (linking) return;
     setLinking(true);
     try {
       if (!ready) { setStatus("Privy is initializing. Try again in a moment."); return; }
 
-      // 1) Buat first-party session di app-mu
       if (!authenticated) {
         await login();
         await new Promise((r) => setTimeout(r, 350));
         await new Promise((r) => setTimeout(r, 350));
       }
 
-      // 2) Link MGID (SDK akan handle popup/consent)
       await loginWithCrossAppAccount({ appId: MGID_PROVIDER_APP_ID });
 
-      // 3) Refresh hasil link
       refreshMGIDFromHook();
       setStatus("MGID linked via Privy ✓ — bind it on-chain to secure it.");
     } catch (err: any) {
@@ -309,7 +304,6 @@ function UI() {
         setRestartCD(Number(rc));
       } catch {}
 
-      // badge - menggunakan isWinner mapping dari game contract
       try {
         const bAddr = await _game.badge();
         if (bAddr && bAddr !== "0x0000000000000000000000000000000000000000") {
@@ -319,10 +313,10 @@ function UI() {
       } catch {}
 
       await refreshPlayerAndScene(_game, addr);
-      await refreshBadge(_game, addr); // Mengirim game contract dan address
+      await refreshBadge(_game, addr);
       await refreshWinners(_game);
 
-      // reset nft cache untuk wallet baru
+      // reset nft cache
       setNftsLoaded(false);
       setOwnerAtFetch("");
       setTokenIds([]);
@@ -354,7 +348,6 @@ function UI() {
           const nextList = (sc[5] as bigint[]).map(n => Number(n));
           setSceneNext(nextList);
           
-          // Generate deskripsi berdasarkan scene ID untuk setiap pilihan
           const options = nextList.map(sceneId => getSceneDescription(sceneId));
           setSceneOptions(options);
         } else {
@@ -366,19 +359,16 @@ function UI() {
     } catch {}
   }
   
-  // Menggunakan isWinner mapping dari game contract untuk pengecekan badge
   async function refreshBadge(g?: Contract | null, addr?: string) {
     try {
       const gg = g || game; 
       const who = addr || personalAddr;
       if (!gg || !who) return;
       
-      // Menggunakan isWinner mapping dari game contract
       const isWinner = await gg.isWinner(who);
       setBadgeOwned(Boolean(isWinner));
     } catch (e) {
       console.error("Error checking badge:", e);
-      // Fallback ke metode lama jika isWinner tidak tersedia
       try {
         if (!badge) return;
         const who = personalAddr;
@@ -396,7 +386,7 @@ function UI() {
     } catch {}
   }
 
-/** ===== Alchemy NFT fetch (bisa diulang-ulang) ===== */
+/** ===== Alchemy NFT fetch ===== */
 async function loadOE() {
   if (!personalAddr) { 
     setStatus("Connect your wallet first.");
@@ -438,13 +428,11 @@ async function startGame() {
   try {
     if (!game) return;
 
-    // Pastikan sudah ada daftar token
     if (!tokenIds.length) {
       alert("No OE tokens found for your wallet. Click 'Load your NFT' first.");
       return;
     }
 
-    // Pilih tokenId yang mau dibakar
     const choice = prompt(`Choose a tokenId to burn as fuel:\n${tokenIds.join(", ")}`);
     if (!choice) return;
     const tokenId = Number(choice);
@@ -453,10 +441,8 @@ async function startGame() {
       return;
     }
 
-    // ✅ Approve per-token (bukan setApprovalForAll)
     await ensureApproval();
 
-    // Mulai game (burn)
     setStatus("Lighting the core…");
     const tx = await game.startWithFuel721(tokenId);
     await tx.wait();
@@ -1184,11 +1170,12 @@ async function startGame() {
           border-radius: 8px;
           border-left: 3px solid var(--color-primary);
         }
-          .scene-name {
-  font-weight: bold;
-  color: var(--color-primary);
-  font-size: 1.2rem;
-}
+        
+        .scene-name {
+          font-weight: bold;
+          color: var(--color-primary);
+          font-size: 1.2rem;
+        }
 
         
 
