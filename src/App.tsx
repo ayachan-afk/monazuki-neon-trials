@@ -627,7 +627,7 @@ async function startGame() {
     </div>
   )}
   
-  {/* NFT Results - Tampilkan selalu jika ada token atau sedang tidak loading */}
+  {/* NFT Results */}
   {!loadingNFTs && (
     <div className="nft-results">
       {tokenIds.length > 0 ? (
