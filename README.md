@@ -66,6 +66,7 @@ VITE_MONAD_RPC=https://testnet-rpc.monad.xyz
 VITE_ALCHEMY_BASE=https://monad-testnet.g.alchemy.com/v2/yourkey
 VITE_GAME_ADDR=0xYourGameContract
 VITE_OE_ADDR=0xYourOETokenContract
+```
 
 ---
 
